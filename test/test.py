@@ -29,6 +29,9 @@ def montgomery_multiplication(X, Y, M):
 
     num_bits = max(M_num_bits, X_num_bits, Y_num_bits)
 
+    R = 1 << M_num_bits  # R = 2^k
+    R_inv = pow(R, -1, M)  # Calculate R^-1 mod M
+
     for i in range(num_bits):
         T0 = get_bit_at_index(T, 0)
         Xi = get_bit_at_index(X, i)
@@ -42,6 +45,10 @@ def montgomery_multiplication(X, Y, M):
 
     if greater_than_or_equal_uint128(T, M):
         T = subtract_uint128(T, M)
+
+
+    # Final multiplication by R_inv if needed (this is context-dependent)
+    #T = multiply_uint128(T, R_inv) % M
 
     return T
 
@@ -64,6 +71,9 @@ m_test_int = (m_test[0] << 64) | m_test[1]
 
 # Run the Montgomery multiplication
 mont_result = montgomery_multiplication(x_test_int, y_test_int, m_test_int)
+
+# Print the result in the desired format
+print(f"Montgomery Result: {{{mont_result >> 64:#018x}, {mont_result & 0xffffffffffffffff:#018x}}}")
 
 # Define the expected result
 mont_expected = (0x0f8dcdc8e57bc403, 0xf1e937f6a7d35a5a)
